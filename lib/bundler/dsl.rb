@@ -58,6 +58,8 @@ module Bundler
 
         gem spec.name, :path => path, :glob => glob
 
+        ruby(spec.required_ruby_version) if !@ruby_version && spec.required_ruby_version
+
         group(development_group) do
           spec.development_dependencies.each do |dep|
             gem dep.name, *(dep.requirement.as_list + [:type => :development])
