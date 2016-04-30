@@ -457,5 +457,33 @@ describe "bundle exec" do
 
       it_behaves_like "it runs"
     end
+
+    context "regarding $0 and __FILE__" do
+      let(:executable) { super() + <<-'RUBY' }
+
+        puts "$0: #{$0.inspect}"
+        puts "__FILE__: #{__FILE__.inspect}"
+      RUBY
+
+      let(:expected) { super() + <<-EOS.chomp }
+
+$0: #{path.to_s.inspect}
+__FILE__: #{path.to_s.inspect}
+      EOS
+
+      it_behaves_like "it runs"
+
+      context "when the path is relative" do
+        let(:path) { super().relative_path_from(Pathname.pwd) }
+
+        it_behaves_like "it runs"
+      end
+
+      xcontext "when the path is relative with a leading ./" do
+        let(:path) { Pathname.new("./#{super().relative_path_from(Pathname.pwd)}") }
+
+        it_behaves_like "it runs"
+      end
+    end
   end
 end
